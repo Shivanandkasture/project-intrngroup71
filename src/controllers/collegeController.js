@@ -26,7 +26,7 @@ const createcollege = async function (req, res) {
 
         if (!/^[a-z]+$/.test(name)) return res.status(400).send({ status: false, message: "Please enter only alphabet & lower case (name)." })
 
-        if (!/^[A-Z a-z]+$/.test(fullName)) return res.status(400).send({ status: false, message: "Please enter only alphabet (fullName)." })
+        if (!/^[A-Z, a-z]+$/.test(fullName)) return res.status(400).send({ status: false, message: "Please enter only alphabet (fullName)." })
 
 
         ///------------------LOGO LINK VALIDATION------------------------------------------/
