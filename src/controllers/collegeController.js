@@ -12,13 +12,13 @@ const createcollege = async function (req, res) {
         //---------------------- Destructure of request body------------------------------------/
 
         let { name, fullName, logoLink } = data
-        
+
         if (!name && !fullName && !logoLink) return res.status(400).send({ status: false, message: "Please provide your details" })
         if (!name)
-        return res.status(400).send({ status: false, message: "Please enter your name" })
-      name = name.toLowerCase()
+            return res.status(400).send({ status: false, message: "Please enter your name" })
+        name = name.toLowerCase()
 
-     
+
         if (!fullName)
             return res.status(400).send({ status: false, message: "Please enter your fullname" })
 
@@ -34,19 +34,19 @@ const createcollege = async function (req, res) {
 
         if (!logoLink)
             return res.status(400).send({ status: false, message: "Please enter LogoLink" })
-        logoLink = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/.test(logoLink)
+        logoLink = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/g.test(logoLink)
 
         if (!logoLink)
             return res.status(400).send({ status: false, message: "Please ensure that you have entered correct url link" })
 
         //------------validations for duplicate field---------------------------------------/
 
-        let isDuplicetName = await collegeModel.findOne({ name:name })
+        let isDuplicetName = await collegeModel.findOne({ name: name })
         if (isDuplicetName) return res.status(400).send({ status: false, message: "college with this name already exist" })
 
         let isDuplicetFullName = await collegeModel.findOne({ fullName })
         if (isDuplicetFullName) return res.status(400).send({ status: false, message: "college with this FullName already exist" })
-        
+
 
         ////          ^^^^^^^^^^^^^^^ validation process finished     ^^^^^^^^^^^^^^^^            /////
 
@@ -84,10 +84,10 @@ const getCollegeDetails = async (req, res) => {
 
         let collegeName = req.query.collegeName;
         if (!collegeName) { return res.status(400).send({ status: false, message: "please enter something in query params" }) }
-        collegeName= collegeName.toLowerCase()
+        collegeName = collegeName.toLowerCase()
         // ------------------- empty field validation---------------------------//
 
-       
+
 
         //--------------------validation for college name --------------------//
 
@@ -108,7 +108,7 @@ const getCollegeDetails = async (req, res) => {
         data.fullName = fullName;
         data.logoLink = logoLink;
         data.interns = interns;
-        res.status(200).send({ status: true, Data:data })
+        res.status(200).send({ status: true, Data: data })
     }
 
 
@@ -116,7 +116,7 @@ const getCollegeDetails = async (req, res) => {
         return res.status(500).send({ status: false, message: err.message })
     }
 
-   
+
 }
 //********************************************************************************************************************************** */
 

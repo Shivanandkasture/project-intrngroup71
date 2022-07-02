@@ -29,6 +29,7 @@ const createInterns = async (req, res) => {
                 if (!email) return res.status(400).send({ status: false, message: "Please enter your emailId" })
 
                 if (!/^\w+([\.-]?\w+)@\w+([\.-]?\w+)(\.\w{2,3})+$/.test(email)) return res.status(400).send({ status: false, message: "Please enter a valid email address " })
+
                 //_______________________________________________ mobile validation____________________________________________//
 
                 if (!mobile) return res.status(400).send({ status: false, message: "Please provide mobile number" })
@@ -45,36 +46,40 @@ const createInterns = async (req, res) => {
                 //^^^^^^^^^^^^^^^^^^^^^^^^^^validation finished^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^//
 
                 ///_______________________________searching details of college using collegeName provided in request body______________//
-              
-                let college = await collegeModel.findOne({ name: collegeName });
+
+                let college = await collegeModel.findOne({ isDeleted: false, name: collegeName });
+
 
                 if (!college) { return res.status(404).send({ status: false, message: "No such college exist" }) }
 
                 //           ------------destructure of id field from the details of college found ----------------------//
 
-                let id = college._id   // will be used as a field to create intern document in internmodel //
+                let collegeId = college._id   // will be used as a field to create intern document in internmodel //
 
                 //---------------------------creating a new object that will be used for creating document--------------//
 
-                let daata = {};
-                daata.name = name;
-                daata.email = email;
-                daata.mobile = mobile;
-                daata.collegeId = id;
+                const saveData = { name, email, mobile, collegeId }
 
                 //_________________creating document______________________//
-                let save = await internModel.create(daata)
 
-                //___________________creating an object that have only those field that we need to send in response _________________//
+                await internModel.create(saveData)
 
-                let answer = {};
-                answer.isDeleted = save.isDeleted;
-                answer.name = save.name;
-                answer.email = save.email;
-                answer.mobile = save.mobile
-                answer.collegeId = save.collegeId ///******** 5 fields will be send in response */
+                //-------------find itnern data ----------//
 
-                return res.status(201).send({ status: true, data: answer })
+                let findInternData = await internModel.findOne({ name, email, mobile, collegeId }, { _id: 0, createdAt: 0, updatedAt: 0, __v: 0 })
+
+                ///******** 5 fields will be send in response */
+
+                let internData = {
+
+                        isDeleted: findInternData.isDeleted,
+                        name: findInternData.name,
+                        email: findInternData.email,
+                        mobile: findInternData.mobile,
+                        collegeId: findInternData.collegeId
+                };
+
+                return res.status(201).send({ status: true, data: internData })
         }
         catch (err) {
                 return res.status(500).send({ status: false, message: err.message })
